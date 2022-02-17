@@ -1,4 +1,4 @@
-import { Button, Checkbox, List, Col, Input } from 'antd';
+import { Button, Checkbox, List, Col, Input, Pagination } from 'antd';
 import React, {Component } from 'react';
 
 export default class Todo extends Component {
@@ -44,8 +44,19 @@ export default class Todo extends Component {
         let defVariable = [{id: Math.random(), title:e.target.value, completed: false}]
         this.setState({todoList : [...this.state.todoList, ...defVariable] })
     }
+    
+    handlerChangePagination = (page, pageSize) => {
+        console.log(page, pageSize)
+        this.setState({perPage : pageSize, curentPage: page})
+    }
+    
     render(){
         const {todoList} = this.state;
+        const {curentPage} = this.state;
+        const {perPage} = this.state;
+
+        const list_end_pos = curentPage*perPage;
+        const list_start_pos = list_end_pos - perPage;
         
         return(
             <>
@@ -53,7 +64,7 @@ export default class Todo extends Component {
                     <h3>My todo list</h3>
                     <List>
                         <Input placeholder='Добавить todo в список' onPressEnter={(e) => this.handlerAddToTodo(e)}/>
-                        {todoList.map((item,index)=>{
+                        {todoList.slice(list_start_pos, list_end_pos).map((item,index)=>{
                             return(
                                     
                                     <List.Item key={index} style={{listStyle: 'decimal', textDecoration : item.completed ? 'line-through' : 'none'}} >
@@ -64,6 +75,7 @@ export default class Todo extends Component {
                             )
                         })}
                     </List>
+                    <Pagination defaultCurrent={curentPage} defaultPageSize={perPage} total={todoList.length} onChange={(page, pageSize) => this.handlerChangePagination(page, pageSize)}/>
                 </Col>
             </>
         )
